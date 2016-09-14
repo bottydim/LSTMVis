@@ -183,7 +183,7 @@ class LSTMDataHandler:
 
         return res, sum_active
 
-    def get_words(self, pos_array, left=10, right=0, raw=False, round_values=5, add_embeddings=False):
+    def get_features(self, pos_array, left=10, right=0, raw=False, round_values=5, add_embeddings=False):
         ws = self.config['word_sequence']
         word_sequence = self.h5_files[ws['file']][ws['path']]
         embeddings = []
@@ -191,6 +191,8 @@ class LSTMDataHandler:
         if add_embeddings and has_embedding:
             we = self.config['word_embedding']
             embeddings = self.h5_files[we['file']][we['path']]
+        elif add_embeddings:
+            print 'missing embeddings file {}'.format('word_embedding')
 
         res = []
         cluster = []
@@ -203,6 +205,12 @@ class LSTMDataHandler:
             words = []
             if 'dict_file' in ws:
                 mapper = self.dicts_id_value[ws['dict_file']]
+                ###
+                #IMRPOVE
+                #change to accomodate Multi-Input output
+                ###
+                # print mapper
+                # print words
                 words = [mapper[x] for x in word_ids.tolist()]
             sub_res = {
                 'pos': pos,
@@ -299,7 +307,7 @@ class LSTMDataHandler:
                 #         del we['embeddings']
                 #     res[dim] = words_and_embedding
                 # else:
-                res[dim] = self.get_words(pos_array, left, right)
+                res[dim] = self.get_features(pos_array, left, right)
             elif dim.startswith('meta_'):
                 res[dim] = self.get_meta(dim[5:], pos_array, left, right)
 

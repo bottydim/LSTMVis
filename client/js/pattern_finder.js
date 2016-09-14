@@ -47,12 +47,14 @@ function all_query_variables_and_defaults() {
 
   // == necessary defaults ==
   url_parameters.pos = +url_parameters.pos || 100;
-
+  // console.log('inside defaults') 
+  // console.log(url_parameters.pos)
 }
 
 
 all_query_variables_and_defaults();
 
+console.log('parameters')
 console.log(url_parameters);
 
 

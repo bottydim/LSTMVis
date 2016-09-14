@@ -359,6 +359,7 @@
 
 </head>
 <body>
+<!-- logo -->
 <div class="container-fluid">
 
     <div style="position: absolute; top: 5px;left: 5px;">
@@ -368,14 +369,21 @@
 
     </div>
 
-    <div class="input-group-sm" style="position: absolute; top: 50px;left: 5px;width:150px;">
+    <h4 style="position: absolute; top: 5px;left: 150px; opacity: 0; width:250px;" id="headline"></h4>
+
+
+
+
+
+    <!-- Upper Control Form -->
+    <div class="input-group-sm" style="position: absolute; top: 100px;left: 5px;width:150px;">
         <select class="form-control" id="sources">
 
         </select><!-- /input-group -->
 
     </div>
 
-    <div style="position: absolute; top: 50px;left: 200px;width:250px;">
+    <div style="position: absolute; top: 100px;left: 155px;width:250px;">
         <div class="input-group input-group-sm" id="search_group">
             <input type="text" class="form-control" id='searchPhrase' placeholder="Search for..."/>
               <span class="input-group-btn">
@@ -384,16 +392,18 @@
         </div><!-- /input-group -->
 
     </div>
-    <!--<div style="position: absolute; top: 100px;left: 5px;width:250px;">-->
-    <!--<div class="input-group input-group-sm">-->
-    <!--&lt;!&ndash;<input type="text" class="form-control" id='positionField' placeholder="Position"/>&ndash;&gt;-->
-    <!--<input class="form-control" min="0" step="1" type="number" id="positionField" placeholder="Position">-->
-    <!--<span class="input-group-btn">-->
-    <!--<button class="btn btn-default" type="button" id="positionFieldButton">Load</button>-->
-    <!--</span>-->
-    <!--</div>&lt;!&ndash; /input-group &ndash;&gt;-->
+    <div style="position: absolute; top: 100px;left: 405px;width:130px;height:31px;">
+        <div class="input-group input-group-sm">
+            <!-- &lt;!&ndash;<input type="text" class="form-control" id='positionField' placeholder="Position"/>&ndash;&gt; -->
+            <input class="form-control" min="0" step="1" type="number" id="positionField" placeholder="Position">
+            <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="positionFieldButton">Load</button>
+            </span>
+        </div><!-- /input-group -->
 
-    <!--</div>-->
+    </div>
+
+
 
     <div class="modal fade" id="search_results_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
         <div class="modal-dialog modal-sm" role="document">
@@ -404,7 +414,7 @@
                     <h4 class="modal-title" id="myModalLabel">Search results</h4>
                 </div>
                 <div class="modal-body" style="height:400px;overflow:scroll;">
-                    <table class="table table-hover" style="font-size: 9pt;">
+                    <table class="table table-hover" style="font-size: 12pt;">
                         <tbody id="search_results">
 
                         </tbody>
@@ -427,8 +437,8 @@
 
     </div>
 
-    <h4 style="position: absolute; top: 5px;left: 150px;" id="headline" style="opacity: 0"></h4>
-    <div style="position: absolute; top: 100px;left: 0;">
+    
+    <div style="position: absolute; top: 200px;left: 0;">
 
         <div id="vis" style="opacity: 0">
         </div>
@@ -503,8 +513,32 @@
 <script>
     $(function () {
         // start()
-//        $('#exampleModal').modal('show')
+       // $('#search_results_modal').modal('show')
     })
+</script>
+<script>
+
+function bindChangePositionButton() {
+  function changePosition() {
+
+    var value = $("#positionField").val();
+    if (value.length < 1) 
+      return;
+    else
+     {
+      value = parseInt(value)
+      event_handler.trigger('goto',value);
+
+     } 
+  }
+  $('#positionFieldButton').on('click',function(){
+
+    changePosition();
+  })
+      
+}
+bindChangePositionButton();
+
 </script>
 
 </body>

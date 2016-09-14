@@ -300,6 +300,29 @@ PatternFinderVis.prototype.bindEvents = function (eventHandler) {
 
   });
 
+
+
+
+  eventHandler.bind('goto', function (e, d) {
+    that.current.pos = d;
+
+    that.current.brush_extent = that.current.brush_extent.map(function (b) {return b - d});
+
+    that.current.selection.cells = that.selected_cells_for_query;
+
+
+    that.query_context(that.current.pos, that.current.data_set, that.current.source, that.current.selection.low_pass_threshold);
+
+    that.eventHandler.trigger('replace_url', {
+      pos: that.current.pos,
+      brush: that.current.brush_extent.join(','),
+      cells: that.selected_cells_for_query.join(','),
+      ex_cells: that.current.selection.excluded_cells.join(',')
+    });
+
+  });
+
+
   eventHandler.bind('navigate', function (e, d) {
     that.current.pos = that.current.pos + d;
 

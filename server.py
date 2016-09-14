@@ -2,7 +2,7 @@ import argparse
 import json
 
 import os
-
+import traceback
 import numpy as np
 import yaml
 from flask import Flask, send_from_directory, jsonify, Response, redirect
@@ -13,7 +13,7 @@ from lstmdata.data_handler import LSTMDataHandler
 import lstmdata.read_index as ri
 import lstmdata.helper_functions as hf
 
-CONFIG_FILE_NAME = 'lstm.yml'
+CONFIG_FILE_NAMES = set(['lstm.yml','model.yml'])
 
 __author__ = 'Hendrik Strobelt'
 
@@ -26,9 +26,8 @@ index_map = {}
 
 @app.route('/')
 def hello_world():
-    """
-    :return: "hello world"
-    """
+    
+
     return redirect('client/index.html')
 
 
@@ -215,7 +214,7 @@ def search_words():
     res = []
     data_set_key = data_set
     if data_set_key in index_map:
-        res = ri.query_index(query, limit, html, dir=index_map[data_set_key])
+        res = ri.query_index(query, limit, html, directory=index_map[data_set_key])
 
     return json.dumps(res)
 
@@ -238,25 +237,44 @@ def create_data_handlers(directory):
     :param directory: scan directory
     :return: null
     """
-    project_dirs = []
+    project_dirs = {}
     for root, dirs, files in os.walk(directory):
-        if CONFIG_FILE_NAME in files:
-            project_dirs.append(os.path.abspath(root))
+        conf = list(CONFIG_FILE_NAMES.intersection(set(files)))
+        num_conf = len(conf)
+        if num_conf==1:
+            project_dirs[os.path.abspath(root)] = conf[0]
+        elif num_conf>1:
+            print 'more than two configuration files in {dir}'.format(dir=os.path.abspath(root))
 
     i = 0
-    for p_dir in project_dirs:
-        with open(os.path.join(p_dir, CONFIG_FILE_NAME), 'r') as yf:
-            config = yaml.load(yf)
+    for p_dir in project_dirs.keys():
+        file_name = project_dirs[p_dir]
+        with open(os.path.join(p_dir, file_name), 'r') as yf:
+
             dh_id = os.path.split(p_dir)[1]
-            data_handlers[dh_id] = LSTMDataHandler(directory=p_dir, config=config)
-            if data_handlers[dh_id].config['index']:
-                index_map[dh_id] = data_handlers[dh_id].config['index_dir']
+            try:
+                config = yaml.load(yf)
+                data_handlers[dh_id] = LSTMDataHandler(directory=p_dir, config=config)
+                if data_handlers[dh_id].config['index']:
+                    index_map[dh_id] = data_handlers[dh_id].config['index_dir']
+            except Exception, e:
+                print 'unable to parse {}'.format(file_name)
+                print e
+                # print repr(traceback.print_stack())
+                # traceback.print_stack()
+                print(traceback.format_exc())
+                # raise e
+            else:
+                print 'imported {}'.format(file_name)
+            finally:
+                pass
+            
         i += 1
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--nodebug", default=False)
-parser.add_argument("--port", default="8888")
+parser.add_argument("--port", default="9999")
 parser.add_argument("--nocache", default=False)
 parser.add_argument("-dir", type=str, default=os.path.abspath('data'))
 

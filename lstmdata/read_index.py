@@ -8,14 +8,16 @@ __author__ = 'Hendrik Strobelt'
 schema = Schema(index=NUMERIC(stored=True), content=TEXT(stored=True))
 
 
-def query_index(_query, no_results=20, htmlFormat=False, dir =''):
+def query_index(_query, no_results=20, htmlFormat=False, directory =''):
     results = []
-    ix = open_dir(dir)
+    ix = open_dir(directory)
 
     with ix.searcher() as searcher:
         query = QueryParser("content", ix.schema).parse('"|| '+_query+'"')
+        # query = QueryParser("content", ix.schema).parse(_query)
+        print query
         results = searcher.search(query, limit=no_results)
-
+        print results
         if htmlFormat:
             results.formatter = HtmlFormatter()
             return map(lambda y: {'index': y['index'], 'text': y.highlights('content')}
